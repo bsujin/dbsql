@@ -336,7 +336,7 @@ ORDER BY ename DESC;
  1. WHERE절에 사용하는 것이 가능
  * WHERE ROWNUM = 1 (= 동등 비교 연산의 경우 1만 가능)
     WHERE ROWNUM <= 15
-    WHERE ROWNUM BETWEEB 1 AND 15
+    WHERE ROWNUM BETWEEN 1 AND 15
    
     cf 조회되지않음) ROWNUM은 1번부터 순차적으로 데이터를 읽어 올때만 가능함.
  SELECT ROWNUM, empno, ename
@@ -345,7 +345,7 @@ ORDER BY ename DESC;
     
   
  SELECT ROWNUM, empno, ename
- FROM  emp;
+ FROM  emp
  WHERE 글번호 BETWEEN 46 AND 60;   (ex.홈페이지 4페이지 )
  
  ex)
@@ -380,7 +380,7 @@ SELECT *
 FROM (SELECT ROWNUM rn, a.*
       FROM 
         (SELECT empno, ename
-         FROM emp
+         FROM emp 
          ORDER BY ename)a)
     WHERE rn BETWEEN (:page - 1) * : pagesize + 1 AND :page * :pagesize;
 
