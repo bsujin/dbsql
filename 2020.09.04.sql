@@ -1,6 +1,5 @@
 9월 4일
 
- 
 1SELECT * 
 2FROM
 3WHERE   IN
@@ -25,6 +24,7 @@ WHERE 절 : 스프레드시트
 비교연산 : >, < , =, !=, <>, <=, >=
         BETWEEN AND
         IN
+        
 연산자를 배울때 (복습할 때) 기억할 부분은
 해당 연산자 X항 연산자 인지하자
 
@@ -71,7 +71,7 @@ WHERE comm IS NOT NULL;
 comm 컬럼의 값이 NULL이 아닐때
     =, !=, <> (부정명령)
 
-IN <==> NOT IN
+`      IN <==> NOT IN
 
 사원 중 소속 부서가 10번이 아닌 사원 조회
 SELECT *
@@ -149,9 +149,9 @@ IN 연산자 사용시 NULL 데이터 유의점
 
 SELECT *
 FROM emp
-WHERE mgr IN(7698,7839,NULL);   ->NULL 데이터 안나옴(is로 해석을 안함)
+WHERE mgr IN(7698,7839,NULL);   --NULL 데이터 안나옴(is로 해석을 안함)
 mgr = 7698 OR mgr = 7839 OR mgr OR NULL
-mgr = 7698 OR mgr = 7839 OR mgr is NULL; =>(is로 따로 표현)
+mgr = 7698 OR mgr = 7839 OR mgr is NULL; --(is로 따로 표현)
 
 SELECT *
 FROM emp
@@ -322,7 +322,7 @@ ORDER BY ename DESC;
 
 
 SELECT *
-FROM emp
+FROM emp;
 WHERE deptno IN(10,30)
  AND sal > 1500
 ORDER BY ename DESC;
@@ -330,6 +330,7 @@ ORDER BY ename DESC;
 
 
 ********실무에서 매우 많이 사용****
+
  ROWNUM : 행의 번호를 부여해주는 가상 컬럼
         ** 조회된 순서대로 번호를 부여
  특징
@@ -337,10 +338,13 @@ ORDER BY ename DESC;
  * WHERE ROWNUM = 1 (= 동등 비교 연산의 경우 1만 가능)
     WHERE ROWNUM <= 15
     WHERE ROWNUM BETWEEN 1 AND 15
+
+
    
     cf 조회되지않음) ROWNUM은 1번부터 순차적으로 데이터를 읽어 올때만 가능함.
+    --세로열
  SELECT ROWNUM, empno, ename
- FROM  emp
+ FROM  emp;
  WHERE ROWNUM BETWEEN = 1; 
     
   
@@ -349,11 +353,6 @@ ORDER BY ename DESC;
  WHERE 글번호 BETWEEN 46 AND 60;   (ex.홈페이지 4페이지 )
  
  ex)
- SELECT ROWNUM, empno, ename
- FROM  emp
- WHERE ROWNUM = 1;
- 
-
  SELECT ROWNUM, empno, ename
  FROM  emp
  WHERE ROWNUM =1
