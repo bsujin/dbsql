@@ -155,8 +155,9 @@ mgr = 7698 OR mgr = 7839 OR mgr is NULL; --(is로 따로 표현)
 
 SELECT *
 FROM emp
-WHERE mgr NOT IN(7698,7839,NULL);   ->NULL 데이터 안나옴(is로 해석을 안함
-mgr != 7698 AND mgr! = 7839 AND mgr ! = null;
+WHERE mgr NOT IN(7698,7839,NULL);  -- ->NULL 데이터 안나옴 in으로 하면 나옴
+WHERE mgr != 7698 AND mgr! = 7839 AND mgr ! = null; --오라클에서는 이렇게 해석함으로 안나옴
+**데이터 집합에 널값이 안나오면 데이터가 안나옴
 =>NULL이 들어간 데이터는 IN, NOT IN 에 포함시키면 안나온다
 그래서, 다음과 같이
 

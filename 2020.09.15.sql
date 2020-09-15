@@ -13,17 +13,19 @@ AND B.BUY_DATE(+) = TO_DATE('2005/01/25', 'YYYY/MM/DD)');
 
 outer join (2,3,4) -실무에서 쓰는 기법   --9월 15일 
 outer join 2
-SELECT TO_DATE(:YYYYMMDD, 'YYYY/MM/DD')buy_date,
-b.buy_prod, p.prod_id, p.prod_name, b.buy_qty
+SELECT TO_DATE(:yyyymmdd, 'YYYY/MM/DD')buy_date,
+b.buy_prod, p.prod_id, p.prod_name
 FROM buyprod b, prod p 
 WHERE b.buy_prod(+) = p.prod_id
-AND b.buy_prod
+AND b.buy_date(+) = TO_DATE(:yyyymmdd, 'yyyy/mm/dd');
 
 outer JOIN3
-SELECT TO_DATE(:YYYYMMDD, 'YYYY/MM/DD')buy_date,
+SELECT TO_DATE(:yyyymmdd, 'YYYY/MM/DD')buy_date,
 b.buy_prod, p.prod_id, p.prod_name, NVL(b.buy_qty,0)
 FROM buyprod b, prod p 
 WHERE b.buy_prod(+) = p.prod_id
+AND b.buy_date(+) = TO_DATE(:yyyymmdd, 'yyyy/mm/dd');
+
 
 outer join4)cycle 쪽에서 1번인 사람만 조인
 100번과 400번만 먹어 5개의 결과가 나오나, 200과 300도 같이 나오기 위해 join
@@ -221,7 +223,11 @@ FROM emp
 WHERE mgr IN (SELECT deptno FROM emp   WHERE empno IN (7499,7782)
 AND deptno IN (SELECT  deptno FROM emp  WHERE empno IN (7499,7782)));
  
- 
+ mgr 7698, 7839 deptno 10,30  => (7698,10) (7698,30) (7839,10  ) (7839,30)
+                                            (7689,30) (7839,10) -- 이거만 찾아야함 (위 방향처럼 해야한다)
+
+
+
  SCALAR SUQUERY : SELECT 절에 기술된 서브쿼리
                 하나의 컬럼
  **  스칼라 서브 쿼리는 하나의 행, 하나의 컬럼을 조회하는 쿼리이어야한다.

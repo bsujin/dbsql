@@ -7,7 +7,6 @@ cnm : customer name
 SELECT *
 FROM customer;
 
-
 SELECT *
 FROM product;
 
@@ -98,7 +97,7 @@ where e.mgr = m.empno  --어디 컬럼에서 어떤것을 읽어야 할지 생�
 
 ANSI
 SELECT e.empno, e.ename, e.mgr, m.ename
-FROM emp e JOIN emp m ON (e.mgr = m.empno);
+FROM emp e JOIN emp m ON (e.mgr = m.empno); --NULL값을 빼고 나옴.
 
 SELECT e.empno, e.ename, e.mgr, m.ename  --  왼쪽에 있는 테이블 (emp의 값은 나옴), join에 실패하여 null값이 나옴
 FROM emp e left JOIN emp m ON (e.mgr = m.empno);
@@ -117,7 +116,7 @@ FROM emp e,emp m --기준이 되는 사원쪽이 e
 WHERE e.mgr = m.empno(+);   --(+)의 방향 주의 
  AND m.deptno(+) -- 연결된 부분도 (+)표시 해줘야함
 
-*주의 ) 행에대한 제한조걸 기술시 WHERE절에 기술 했을 때와 ON절에 기술 했을때 결과가 다르다.
+*주의 ) 행에대한 제한조건 기술시 WHERE절에 기술 했을 때와 ON절에 기술 했을때 결과가 다르다.
 
 SELECT e.empno, e.ename, e.mgr, m.empno, m.ename
 FROM emp e RIGHT OUTER JOIN emp m ON (e.mgr = m.empno);
@@ -146,10 +145,10 @@ FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno AND e.deptno = 10);
 조건을 WHERE절에 기술한 경우 ==> OUTER JOIN이 아닌 INNER 조인 결과가 나온다.
 SELECT e.empno, e.ename, e.deptno, e.mgr, m.ename, m.deptno
 FROM emp e LEFT OUTER JOIN emp m ON (e.mgr = m.empno)
-WHERE e.deptno = 10;
+WHERE e.deptno = 10; --(3개 추출)
 
 SELECT e.empno, e.ename, e.deptno, e.mgr, m.ename, m.deptno
 FROM emp e JOIN emp m ON (e.mgr = m.empno)
-WHERE e.deptno = 10; --NULL값 빠짐
+WHERE e.deptno = 10; --NULL값 빠짐 (2개 추출)
 
 
