@@ -11,7 +11,7 @@ DDL : Data Defination Language
 TABLE 
 순서를 보장하지 않는다 - ORDER BY 사용
 
-오라클 객체에 대한 규칙 (테이블과 컬럼명 규칙 ) - 객체 생성, 삭제명령
+오라클 객체에 대한 규칙 (테이블과 컬럼명 규칙 ) - 객체생성, 삭제명령
 CREATE 객체타입 객체이름 - 개발자가 부여
 
 DROP 객체타입 객체이름;
@@ -20,7 +20,7 @@ DROP 객체타입 객체이름;
         모델링 툴을 사용하여 설계를 하게되면 툴에서 설계된 테이블을 생성하는 구문을 자동으로 만들어준다.
 
 테이블을 생성하는 문법
-system - 
+system  
 --sql은 {}가 없음
 CREATE TABLE [오라클 사용자]. 테이블명 (
     컬럼명 컬럼의 데이터 타입, 
@@ -38,6 +38,7 @@ CREATE TABLE ranger(
     ranger_nm VARCHAR2(50),
     reg_dt DATE);
 --[]는 옵션
+
 SELECT * 
 FROM ranger
 
@@ -60,8 +61,9 @@ DROP TABLE ranger;
         CHAR (1~2000 byte), 고정길이 문자열
         CHAR (5) 'test'
         
-        test는 4byte , char(5) 5byte 이기 때문에  남은 데이터 공간에 공백문자를 삽입 'test ;
-3. 날짜 : DATE - 7bytet' 고정일자, 시간(시,분,초)정보 저장
+        test는 4byte , char(5) 5byte 이기 때문에  남은 데이터 공간에 공백문자를 삽입 'test';
+        
+3. 날짜 : DATE - 7byte 고정일자, 시간(시,분,초)정보 저장
 varchar 날짜관리  : YYYYMMDD ==> '20200918' ==> 8byte
 시스템에서 문자형식으로 많이 사용한다면 문자타입으로 사용도 고려
 
@@ -70,19 +72,19 @@ varchar 날짜관리  : YYYYMMDD ==> '20200918' ==> 8byte
   4.2 BLOB  : 바이너리 데이터, 사이즈: 4GB
         - CMS - 월 2만원 
  
-제약조건 : 데이터에 이상한 값이 들어가지 않도록 강제하는 설정
+**제약조건 : 데이터에 이상한 값이 들어가지 않도록 강제하는 설정
     EX) emp테이블에 empno컬럼에 값이 없는 상태로 들어가는 것을 방지
-        emp테이블에 deptno컬럼dml 값이 dept 테이블에 존재하지 않은 데이터를 입력하는 것을 방지
+        emp테이블에 deptno컬럼 dml 값이 dept 테이블에 존재하지 않은 데이터를 입력하는 것을 방지
         emp테이블에 empno(사번) 컬럼의 값이 중복되지 않도록 방지
         
 제약조건 4가지(2~5)가 존재, 그 중 한가지의 일부를 별도의 키워드로 제공 
-ORACLE에서 만들 수 있는 제약조건이 5가지
+** ORACLE에서 만들 수 있는 제약조건이 5가지
 
 1. NOT NULL : 컬럼에 반드시 값이 들어가게 하는 제약조건 (CHECK제약조건의 특수한 형태)
 2. UNIQUE : 해당 컬럼에 중복된 값이 들어오는 것을 방지하는 제약조건
 3. PRIMARY KEY : UNIQUE + NOT NULL
-4. FOREIGN KEY : 해당 컬럼이 참조하는 다른 테이블의 컬럼에 값이 존재해야하는 제약조건
-                emp.deptno ==> dept.dept.no
+4. FOREIGN KEY (FK) : 해당 컬럼이 참조하는 다른 테이블의 컬럼에 값이 존재해야하는 제약조건
+                emp.deptno ==> dept.deptno
 5. CHECK : 컬럼에 들어갈 수 있는 값을 제한하는 제약조건
             ex) 성별이라는 컬럼 있다고 가정 - 들어갈 수 있는 값이 : 남 M, 여, ===> T
             
@@ -96,11 +98,11 @@ CREATE TABLE 테이블명 ( 컬럼1 컬럼1의 데이터타입, 컬럼2 컬럼2�
 --마지막 컬럼에 ,해줘야함  -> 제약조건이 들어가므로 
 
 CREATE TABLE dept_test(
-        deptno NUMbER(2) , 
+        deptno NUMBER(2) , 
         dname VARCHAR2(14),
         loc VARCHAR2(13),
         CONSTRAINT PK_dept_test PRIMARY KEY (deptno, dname) --해당테이블 어떤 컬럼에 들어갈지를 기술해줘야함 
-);            --부서번호와 부서이름이 같을때
+               --부서번호와 부서이름이 같을때
 
 deptno 컬럼의 값은 90으로 같지만 dname컬럼의 값이 다르므로 PRIAMARY KEY(DEPTNO,DNAME)설정에 따라 데이터가 입력될 수 있다.
 
@@ -110,8 +112,6 @@ INSERT INTO dept_test VALUES (90, 'ddit', 'daejeon');
 INSERT INTO dept_test VALUES (90, 'ddit3', 'daejeon');
     
 3. 이미 생성된 테이블에 제약조건을 추가하여 생성
-
-
 
 
 ===========================================================================================
@@ -167,8 +167,7 @@ DROP TABLE dept_test;
 CREATE TABLE dept_test(
         deptno NUMbER(2) CONSTRAINT PK_dept_test PRIMARY KEY,
         dname VARCHAR2(14),
-        loc VARCHAR2(13)
-);            
+        loc VARCHAR2(13));            
 
 ROLLBACK;
 INSERT INTO dept_test VALUES (90, 'ddit', 'daejeon');
@@ -182,8 +181,7 @@ DROP TABLE dept_test;
 CREATE TABLE dept_test(
         deptno NUMbER(2) CONSTRAINT PK_dept_test PRIMARY KEY,
         dname VARCHAR2(14) NOT NULL,
-        loc VARCHAR2(13)
-);            
+        loc VARCHAR2(13) );            
 
 INSERT INTO dept_test VALUES (90, 'ddit', 'daejeon');
 INSERT INTO dept_test VALUES (91, NULL, '대전'); 
@@ -198,11 +196,10 @@ DROP TABLE dept_test;
 U_테이블명_컬럼명
 
 CREATE TABLE dept_test(
-        deptno NUMbER(2) ,
+        deptno NUMBER(2) ,
         dname VARCHAR2(14),
         loc VARCHAR2(13),
-        CONSTRAINT U_dept_test UNIQUE(dname)    
-);   
+        CONSTRAINT U_dept_test UNIQUE(dname) );   
 
 INSERT INTO dept VALUES (90, 'ddit', 'daejeon');
 INSERT INTO dept VALUES (90, null, 'daejeon');
@@ -283,8 +280,7 @@ WHERE deptno = 90;
         삭제시 참조하고 있는 자식 테이블의 컬럼을 NULL로 만든다. 
       
         
-2.
-DROP TABLE emp_test;
+2.DROP TABLE emp_test;
 
 CREATE TABLE emp_test(
  empno NUMBER(4), 
@@ -329,8 +325,7 @@ CREATE TABLE emp_test(
     empno NUMBER(4),
     ename VARCHAR2(14),
     sal NUMBER(7) CONSTRAINT C_SAL CHECK ( sal > 0),
-    gender Varchar2 (1) CONSTRAINT C_gender check(gender IN ('M','F'))
-    );
+    gender Varchar2 (1) CONSTRAINT C_gender check(gender IN ('M','F'))    );
     
     INSERT INTO emp_test VALUES (9000, 'brown', -5, 'M'); sal체크
     INSERT INTO emp_test VALUES ( 9000, 'brown', 100, 'T'); 성별체크
@@ -353,7 +348,7 @@ CREATE TABLE emp_test(
    COMMIT, ROLLBACK;
    ROLLBACK;
    
-   DDL 주의점
+DDL 주의점
    1. DDL ROLLBACK이 안된다.
     DROP TABLE emp_test;
     CREATE TABLE emp_test(
@@ -433,6 +428,7 @@ FROM dept_test
 ===== 테이블 변경
 1. 새로운 컬럼을 추가
 2. 기존에 존재하는 컬럼의 변경 (이름, 데이터 타입)
+
 ** 데이터 타입의 경우는 이미 데이터가 존재하면 수정이 불가능하다.
 예외) 동일한 데이터 타입으로 사이즈를 늘리는 경우는 상관없음 
     ==> 설계시 고려를 충분히 하자
@@ -513,11 +509,11 @@ ALTER TABLE dept_test ADD constraint PK_DEPT_TEST PRIMARY KEY (deptno);
 
 
 2. emp_test 테이블의 empno 컬럼에 PRIMARY KEY 제약조건 추가
-  ALTER TABLE emp_test ADD CONSTRAINT PK_DEPT_TEST PRIMARY KEY (emptno);
+  ALTER TABLE emp_test ADD CONSTRAINT PK_EMT_TEST PRIMARY KEY (emptno);
 
 
 3. emp_test 테이블의 deptno컬럼이 dept_test 컬럼의 deptno컬럼을 참조하는 FOREIGN KEY 제약조건 추가
-  ALTER TABLE emp_test ADD CONSTRAINT PK_emp_test_dept_test
-  FOREIGN KEY (DEPTNO) REFERENCES dept_test (deptno);
+ALTER TABLE emp_test ADD CONSTRAINT fk_emp_test_dept_test
+FOREIGN KEY (deptno) REFERENCES dept_test (deptno);
 
 FOREIGN KEY - 자식테이블에 만드는것
