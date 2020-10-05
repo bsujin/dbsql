@@ -1,0 +1,131 @@
+
+달력만들기
+(주요 기술)
+
+1. CONNECT BY LEVEL ( 행을 인위적으로 만들기)
+
+2. 그룹함수 ( 여러 행을 하나의 행으로 만드는 방법 )
+
+3. EXPRESSION  ( 테이블에 존재하지 않지만 수식, 함수를 이용하여 새로운 컬럼을 만드는 방법 )
+
+4. 부수적인것들 
+    (date관련 함수  
+    - 월의 마지막 일자 구하기    
+    - 주차 계산 (표준 : 목요일이 주차 시작))
+    
+=====================================================================================
+
+1. CONNECT BY LEVEL (인위적으로 여러개의 행을 만들기)
+     => 계층쿼리 : 행과 행을 연결하는 방법 (가지치기하듯 계속 늘어난다)
+                (CONNECT BY LEVEL ==> CROSS JOIN 과 비슷 : 연결가능한 모든 행을 연결)
+        --  LTRIM, sys_connect_by_path
+        조인 : 테이블의 행과 다른 테이블의 행을 연결 (컬럼 확장)
+    
+    SELECT LEVEL, dummy, LTRIM(sys_connect_by_path(dummy,'-'),'-')
+    FROM dual
+    CONNECT BY LEVEL <= 31;
+    
+    년월 문자열이 주어졌을 때 해당 월의 일수 구하기
+    EX : '202010' ==> 31
+    - 날짜가 있으면 원하는 항목(년, 월, 일, 시, 분, 초)만 추출할 수 있다.
+            => TO_CHAR(날짜, '원하는항목')
+    - 주어진것은 문자열 
+      => TO_CHAR(해당날짜의 마지막 날짜 구하는 함수 (TO_DATE('202010','(하고자하는)포맷')),'원하는항목')
+          -> TO_DATE('202010','YYYYMM') : 일자를 설정하지 않았기 때문에 1일자 0시 0분 0초
+               
+           => 마지막 날짜로 변경 LAST_DAY 추가
+           = TO_CHAR(LAST_DAY (TO_DATE('202010','YYYYMM')),'원하는항목')
+    
+    SELECT TO_CHAR(LAST_DAY (TO_DATE('202010','YYYYMM')),'DD')
+    FROM dual;
+               
+               
+          SELECT LEVEL,dummy
+          FROM dual
+          CONNECT BY LEVEL <= TO_CHAR(LAST_DAY (TO_DATE('202010','YYYYMM')),'DD')
+                -- 값보다 LEVEL의 항목이 중요함
+    
+    실제 필요한 값 ==> 날짜 (20201001~20201031)
+            -> DATE + 정수 = DATE에서 정수를 일자로 취급해서 더한 날짜
+                    EX. 2020.10.05 + 5 = 2020.10.10
+         
+      현재 필요한 값 : 2020년 10월 1일 자를 만들려면,
+      주어진 값 : '202010'
+         1) 문자열 결합 : '202010' || '01' ==> '20201001'
+         2) 날짜함수 : TO_DATE('202010'||'01', 'YYYYMMDD')
+          == TO_DATE('202010','YYYYMM')
+          
+   ==  2020년 10월 1일의 날짜 타입을 구함
+  날짜 + 숫자(LEVEL) 연산을 통해 2020년 10월의 모든 일자를 구할 수 있다.
+     ==> LEVEL은 1부터 시작하므로 2020년 10월 1일 값을 유지하기 위해서는 '날짜 + LEVEL -1'
+ 
+ 1.    
+     1. 주어진 문자열 2.LAST_DAY 사용 3. 원하는 값만 잘라내기 -> CONNECT BY LEVEL 
+     4. 1일의 값을 유지 LEVEL-1 (SELECT)
+     
+     SELECT TO_DATE('202010','YYYYMM') + LEVEL-1 day,
+            TO_CHAR(TO_DATE('202010','YYYYMM') + LEVEL-1, 'D') d,
+            TO_CHAR(TO_DATE('202010','YYYYMM') + LEVEL-1, 'IW') iw
+     FROM dual
+     CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(TO_DATE('202010', 'YYYYMM')),'DD')
+     
+ 
+ ===========================
+ 2. 3개의 컬럼으로 해당날짜의 요일에 따라서 새롭게 만든 7개 컬럼(일~월)에 날짜를 위치시킨다.
+     (DECODE함수사용)
+     -7개의 컬럼 : 행을 확장 
+     
+   1)해당일자가 일요일이면 DAY 표현 => SUN(일) : 존재하는 컬럼에만 값이 표시, 나머지는 NULL
+ 
+    SELECT /*day, d,*/ iw, DECODE(d,1,day)SUN, DECODE(d,2,day)MON, DECODE(d,3,day)TUE,
+            DECODE(d,4,day)WED, DECODE(d,5,day)THU, DECODE(d,6,day)FRI, DECODE(d,7,day)SAT
+    FROM
+     ( SELECT TO_DATE('202010','YYYYMM') + LEVEL-1 day,
+            TO_CHAR(TO_DATE('202010','YYYYMM') + LEVEL-1, 'D') d,
+            TO_CHAR(TO_DATE('202010','YYYYMM') + LEVEL-1, 'IW') iw
+             FROM dual
+     CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(TO_DATE('202010', 'YYYYMM')),'DD'))
+     
+     
+ -필요한 컬럼만 SELECT절에 표현하기 'IW'만 표시 : 같은 주차에 있는 요일이 하나의 행으로 묶기
+   => GROUPING 의 기준 'IW' -> GROUPING 함수 생각하기  
+   - 그룹함수에는 NULL컬럼 무시, MAX,MIN을 사용하여도 값이 1개이므로 하나의 값만 나온다.
+   
+    2) IW로 그룹화 해주기
+    MIN함수사용 - 연산이 max보다 빠름 
+    IW에도 DECODE함수 사용 : 1이 들어가면
+    SELECT /*DECODE(d,1,iw+1,iw)*/ MIN(DECODE(d,1,day))SUN, MIN(DECODE(d,2,day))MON, MIN(DECODE(d,3,day))TUE,
+            MIN(DECODE(d,4,day))WED, MIN(DECODE(d,5,day))THU, MIN(DECODE(d,6,day))FRI, MIN(DECODE(d,7,day))SAT
+    FROM
+     ( SELECT TO_DATE('202010','YYYYMM') + LEVEL-1 day,
+            TO_CHAR(TO_DATE('202010','YYYYMM') + LEVEL-1, 'D') d,
+            TO_CHAR(TO_DATE('202010','YYYYMM') + LEVEL-1, 'IW') iw
+             FROM dual
+     CONNECT BY LEVEL <= TO_CHAR(LAST_DAY(TO_DATE('202010', 'YYYYMM')),'DD'))
+     GROUP BY DECODE(d,1,iw+1,iw)
+     ORDER BY DECODE(d,1,iw+1,iw);
+     
+     -  /*DEOCODE(d,1,iw+1,iw),*/ 
+       -iw에 decode를 하지않으면 한주씩 앞당겨져서 표시가 됨 
+     ================================================================================
+IW      SUN             
+40	2020/10/04				2020/10/01	2020/10/02	2020/10/03
+41	2020/10/11	2020/10/05	2020/10/06	2020/10/07	2020/10/08	2020/10/09	2020/10/10
+42	2020/10/18	2020/10/12	2020/10/13	2020/10/14	2020/10/15	2020/10/16	2020/10/17
+43	2020/10/25	2020/10/19	2020/10/20	2020/10/21	2020/10/22	2020/10/23	2020/10/24
+44		2020/10/26	2020/10/27	2020/10/28	2020/10/29	2020/10/30	2020/10/31
+    
+     decode (d,1,iw+1, iw) : 일요일일때는 주차정보를 다르게 함 (국제표준 무시)
+     d가 1이면 iw+1 
+     dr가 1이 아니면 iw 
+   
+     IW에 함수 사용 : decode (d,1,iw+1, iw)
+  =============================================================================
+  				2020/10/01	2020/10/02	2020/10/03
+2020/10/04	2020/10/05	2020/10/06	2020/10/07	2020/10/08	2020/10/09	2020/10/10
+2020/10/11	2020/10/12	2020/10/13	2020/10/14	2020/10/15	2020/10/16	2020/10/17
+2020/10/18	2020/10/19	2020/10/20	2020/10/21	2020/10/22	2020/10/23	2020/10/24
+2020/10/25	2020/10/26	2020/10/27	2020/10/28	2020/10/29	2020/10/30	2020/10/31
+     
+    
+   
